@@ -1,0 +1,190 @@
+Disable distributed.
+Path already exists. Rename it to /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/experiments/001_ESRGAN_x4_FIE_archived_20241118_132200
+Path already exists. Rename it to /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/tb_logger/001_ESRGAN_x4_FIE_archived_20241118_132200
+/home/jhlee24/.conda/envs/adaslide/lib/python3.8/site-packages/torchvision/transforms/functional_tensor.py:5: UserWarning: The torchvision.transforms.functional_tensor module is deprecated in 0.15 and will be **removed in 0.17**. Please don't rely on it. You probably just need to use APIs in torchvision.transforms.functional or in torchvision.transforms.v2.functional.
+  warnings.warn(
+2024-11-18 13:22:00,302 INFO: 
+                ____                _       _____  ____
+               / __ ) ____ _ _____ (_)_____/ ___/ / __ \
+              / __  |/ __ `// ___// // ___/\__ \ / /_/ /
+             / /_/ // /_/ /(__  )/ // /__ ___/ // _, _/
+            /_____/ \__,_//____//_/ \___//____//_/ |_|
+     ______                   __   __                 __      __
+    / ____/____   ____   ____/ /  / /   __  __ _____ / /__   / /
+   / / __ / __ \ / __ \ / __  /  / /   / / / // ___// //_/  / /
+  / /_/ // /_/ // /_/ // /_/ /  / /___/ /_/ // /__ / /<    /_/
+  \____/ \____/ \____/ \____/  /_____/\____/ \___//_/|_|  (_)
+    
+Version Information: 
+	BasicSR: 1.4.2
+	PyTorch: 2.0.1+cu117
+	TorchVision: 0.15.2+cu117
+2024-11-18 13:22:00,302 INFO: 
+  name: 001_ESRGAN_x4_FIE
+  model_type: ESRGANModel
+  scale: 4
+  num_gpu: 2
+  manual_seed: 42
+  datasets:[
+    train:[
+      name: FoundationHist
+      type: PairedImageDataset
+      dataroot_gt: /project/kimlab_tcga/AdaSlide_dataset/HR/train
+      dataroot_lq: /project/kimlab_tcga/AdaSlide_dataset/LR-x4/train
+      filename_tmpl: {}
+      io_backend:[
+        type: disk
+      ]
+      gt_size: 128
+      use_hflip: True
+      use_rot: True
+      num_worker_per_gpu: 24
+      batch_size_per_gpu: 384
+      dataset_enlarge_ratio: 1
+      prefetch_mode: None
+      phase: train
+      scale: 4
+    ]
+    val:[
+      name: FoundationHist
+      type: PairedImageDataset
+      dataroot_gt: /project/kimlab_tcga/AdaSlide_dataset/HR/valid
+      dataroot_lq: /project/kimlab_tcga/AdaSlide_dataset/LR-x4/valid
+      io_backend:[
+        type: disk
+      ]
+      phase: val
+      scale: 4
+    ]
+  ]
+  network_g:[
+    type: RRDBNet
+    num_in_ch: 3
+    num_out_ch: 3
+    num_feat: 64
+    num_block: 23
+  ]
+  network_d:[
+    type: VGGStyleDiscriminator
+    num_in_ch: 3
+    num_feat: 64
+  ]
+  path:[
+    pretrain_network_g: experiments/pretrained_models/ESRGAN_SRx4.pth
+    strict_load_g: True
+    resume_state: None
+    experiments_root: /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/experiments/001_ESRGAN_x4_FIE
+    models: /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/experiments/001_ESRGAN_x4_FIE/models
+    training_states: /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/experiments/001_ESRGAN_x4_FIE/training_states
+    log: /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/experiments/001_ESRGAN_x4_FIE
+    visualization: /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/experiments/001_ESRGAN_x4_FIE/visualization
+  ]
+  train:[
+    ema_decay: 0.999
+    optim_g:[
+      type: Adam
+      lr: 0.0001
+      weight_decay: 0
+      betas: [0.9, 0.99]
+    ]
+    optim_d:[
+      type: Adam
+      lr: 0.0001
+      weight_decay: 0
+      betas: [0.9, 0.99]
+    ]
+    scheduler:[
+      type: MultiStepLR
+      milestones: [20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000]
+      gamma: 0.5
+    ]
+    total_iter: 100000
+    warmup_iter: 10000
+    pixel_opt:[
+      type: L1Loss
+      loss_weight: 0.01
+      reduction: mean
+    ]
+    perceptual_opt:[
+      type: PerceptualLoss
+      layer_weights:[
+        conv5_4: 1
+      ]
+      vgg_type: vgg19
+      use_input_norm: True
+      range_norm: False
+      perceptual_weight: 1.0
+      style_weight: 0
+      criterion: l1
+    ]
+    gan_opt:[
+      type: GANLoss
+      gan_type: vanilla
+      real_label_val: 1.0
+      fake_label_val: 0.0
+      loss_weight: 0.005
+    ]
+    net_d_iters: 1
+    net_d_init_iters: 0
+  ]
+  val:[
+    val_freq: 5000.0
+    save_img: True
+    metrics:[
+      psnr:[
+        type: calculate_psnr
+        crop_border: 4
+        test_y_channel: False
+      ]
+    ]
+  ]
+  logger:[
+    print_freq: 100
+    save_checkpoint_freq: 5000.0
+    use_tb_logger: True
+    wandb:[
+      project: PathoSR
+      resume_id: None
+    ]
+  ]
+  dist_params:[
+    backend: nccl
+    port: 29500
+  ]
+  dist: False
+  rank: 0
+  world_size: 1
+  auto_resume: False
+  is_train: True
+  root_path: /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR
+
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Currently logged in as: jonghyunlee1993. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.18.7
+wandb: Run data is saved locally in /project/kimlab_tcga/JH_workspace/AdaSlide/BasicSR/wandb/run-20241118_132204-tu73d9kz
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run 001_ESRGAN_x4_FIE
+wandb: ⭐️ View project at https://wandb.ai/jonghyunlee1993/PathoSR
+wandb: 🚀 View run at https://wandb.ai/jonghyunlee1993/PathoSR/runs/tu73d9kz
+2024-11-18 13:22:06,083 INFO: Use wandb logger with id=tu73d9kz; project=PathoSR.
+Traceback (most recent call last):
+  File "./basicsr/train.py", line 215, in <module>
+    train_pipeline(root_path)
+  File "./basicsr/train.py", line 120, in train_pipeline
+    result = create_train_val_dataloader(opt, logger)
+  File "./basicsr/train.py", line 35, in create_train_val_dataloader
+    train_set = build_dataset(dataset_opt)
+  File "/home/jhlee24/.conda/envs/adaslide/lib/python3.8/site-packages/basicsr/data/__init__.py", line 34, in build_dataset
+    dataset = DATASET_REGISTRY.get(dataset_opt['type'])(dataset_opt)
+  File "/home/jhlee24/.conda/envs/adaslide/lib/python3.8/site-packages/basicsr/data/paired_image_dataset.py", line 63, in __init__
+    self.paths = paired_paths_from_folder([self.lq_folder, self.gt_folder], ['lq', 'gt'], self.filename_tmpl)
+  File "/home/jhlee24/.conda/envs/adaslide/lib/python3.8/site-packages/basicsr/data/data_util.py", line 228, in paired_paths_from_folder
+    assert input_name in input_paths, f'{input_name} is not in {input_key}_paths.'
+KeyboardInterrupt
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/home/jhlee24/.conda/envs/adaslide/lib/python3.8/site-packages/wandb/sdk/lib/sock_client.py", line 151, in _send_message
+    self._sendall_with_error_handle(header + data)
+  File "/home/jhlee24/.conda/envs/adaslide/lib/python3.8/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+    sent = self._sock.send(data)
+BrokenPipeError: [Errno 32] Broken pipe

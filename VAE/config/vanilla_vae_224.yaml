@@ -1,0 +1,20 @@
+model_params:
+  name: 'VanillaVAE'
+  in_size: 224
+  in_channels: 3
+  latent_dim: 512
+  hidden_dims: [32, 64, 128, 256, 256, 512, 512]
+
+data_params:
+  train_path: "/data/SR-Hist-Foundation/HR/*.png"
+  valid_path: "/data/SR-Hist-Foundation/HR_valid/*.png"
+  test_path: "/data/SR-Hist-Foundation/HR_test/*.png"
+  batch_size: 128
+  num_workers: 32
+
+training_params:
+  learning_rate: 1e-4
+  max_epochs: 5
+  gpus: [0]
+  every_n_train_steps: 5000
+  save_top_k: 1
