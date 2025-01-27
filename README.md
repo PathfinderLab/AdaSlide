@@ -18,7 +18,6 @@ I recommend using Anaconda or Miniconda. The Python version is 3.8.
 
 1. Type command: `sudo apt -y install openslide-tools`
 2. Type command: `pip install -r requirements.txt`
-3. Type command: `cd CLAM/smooth-topk; python setup.py install; cd ../..`
 
 ## How to train new AdaSlide models?
 Please read and follow the instructions [step_by_step_instruction](docs/step_by_step_guide.md.md)
