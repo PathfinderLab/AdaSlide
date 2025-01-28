@@ -20,4 +20,4 @@ I recommend using Anaconda or Miniconda. The Python version is 3.8.
 2. Type command: `pip install -r requirements.txt`
 
 ## How to train new AdaSlide models?
-Please read and follow the instructions [step_by_step_instruction](docs/step_by_step_guide.md.md)
+Please read and follow the instructions [step_by_step_instruction](docs/step_by_step_guide.md)
